@@ -80,10 +80,10 @@ This port is initially created by Ross Wightman and is in no way related to Goog
 
 The Python conversion code that started me on my way was adapted from the CoreML port at https://github.com/infocom-tpo/PoseNet-CoreML
 
-### TODO (someday, maybe)
-* More stringent verification of correctness against the original implementation
+### TODO 
+* Migration to Tensorflow 2.x
+* Adding ResNet50 (PoseNet 2)
 * Performance improvements (especially edge loops in 'decode.py')
 * OpenGL rendering/drawing
 * Comment interfaces, tensor dimensions, etc
-* Implement batch inference for image_demo
 
