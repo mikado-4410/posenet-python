@@ -28,6 +28,26 @@ pip install opencv-python==3.4.5.20
 
 ```
 
+### Using Docker 
+
+A convenient way to run this project is by building and running the docker image, because it has all the requirements built-in. The main 
+requirement is that you have a Linux machine with a GPU set up with docker, the nvidia host driver and the nvidia-docker toolkit. Once set 
+up, you can make as many images as you want with different depencencies without touching your host OS (or fiddling with conda).  
+
+```bash
+./docker_img_build.sh
+./get_test_images_run.sh
+./image_demo_run.sh
+``` 
+
+Some pointers to get you going on the Linux machine setup. Most links are based on Ubuntu, but other distributions should work fine as well. 
+* [Install docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/ )
+* [Install the NVIDIA host driver](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#ubuntu-installation)
+  * remember to reboot here
+* [Install the NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-docker)
+* check your installation: `docker run --gpus all nvidia/cuda nvidia-smi`
+
+
 ### Usage
 
 There are three demo apps in the root that utilize the PoseNet model. They are very basic and could definitely be improved.
@@ -56,7 +76,7 @@ The webcam demo uses OpenCV to capture images from a connected webcam. The resul
 
 The original model, weights, code, etc. was created by Google and can be found at https://github.com/tensorflow/tfjs-models/tree/master/posenet
 
-This port and my work is in no way related to Google.
+This port is initially created by Ross Wightman and is in no way related to Google.
 
 The Python conversion code that started me on my way was adapted from the CoreML port at https://github.com/infocom-tpo/PoseNet-CoreML
 

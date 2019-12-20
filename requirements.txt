@@ -1,0 +1,6 @@
+# scipy==1.4.1
+scipy==1.1.*
+# pyyaml==5.2
+pyyaml==3.*
+opencv-python-headless==3.4.5.20
+# opencv-python==3.4.5.20

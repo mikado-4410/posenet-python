@@ -7,5 +7,4 @@ Modified (c) 2018 Ross Wightman
 
 tfjs PoseNet weights and original JS code
 Copyright 2018 Google LLC. All Rights Reserved.
-
-
+(https://github.com/tensorflow/tfjs-models | Apache License 2.0)

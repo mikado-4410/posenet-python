@@ -3,6 +3,7 @@ output/*
 .idea/*
 .idea
 _models/*
+_posenet_weights/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -174,6 +175,7 @@ cmake-build-*/
 
 # IntelliJ
 out/
+output.txt
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
