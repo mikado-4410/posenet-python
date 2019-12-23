@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:1.15.0-gpu-py3-jupyter
+FROM tensorflow/tensorflow:2.0.0-gpu-py3-jupyter
 # see: https://www.tensorflow.org/install/docker
 # see: https://hub.docker.com/r/tensorflow/tensorflow/
 
