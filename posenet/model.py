@@ -35,25 +35,22 @@ def load_config(model_ord):
 def load_model(model_id, sess, model_dir=MODEL_DIR):
     model_ord = model_id_to_ord(model_id)
     model_cfg = load_config(model_ord)
-    model_path = os.path.join(model_dir, 'model-%s.pb' % model_cfg['checkpoint_name'])
+    model_path = os.path.join(model_dir, 'model-%s' % model_cfg['checkpoint_name'])
     if not os.path.exists(model_path):
         print('Cannot find model file %s, converting from tfjs...' % model_path)
         from posenet.converter.tfjs2python import convert
         convert(model_ord, model_dir, check=False)
         assert os.path.exists(model_path)
 
-    with tf.io.gfile.GFile(model_path, 'rb') as f:
-        graph_def = tf.compat.v1.GraphDef()
-    graph_def.ParseFromString(f.read())
     sess.graph.as_default()
-    tf.import_graph_def(graph_def, name='')
+    tf.compat.v1.saved_model.loader.load(sess, ["serve"], model_path)
 
-    if DEBUG_OUTPUT:
-        graph_nodes = [n for n in graph_def.node]
-        names = []
-        for t in graph_nodes:
-            names.append(t.name)
-            print('Loaded graph node:', t.name)
+    # if DEBUG_OUTPUT:
+    #     graph_nodes = [n for n in graph_def.node]
+    #     names = []
+    #     for t in graph_nodes:
+    #         names.append(t.name)
+    #         print('Loaded graph node:', t.name)
 
     offsets = sess.graph.get_tensor_by_name('offset_2:0')
     displacement_fwd = sess.graph.get_tensor_by_name('displacement_fwd_2:0')

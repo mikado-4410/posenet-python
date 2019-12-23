@@ -9,7 +9,8 @@ import tempfile
 
 from posenet.converter.config import load_config
 
-BASE_DIR = os.path.join(tempfile.gettempdir(), '_posenet_weights')
+# BASE_DIR = os.path.join(tempfile.gettempdir(), '_posenet_weights')
+BASE_DIR = os.path.join('.', '_posenet_weights')
 
 # Note that this file contains reverse-engineered documentation that contains several notes about points that need to be verified.
 
@@ -237,7 +238,6 @@ def convert(model_id, model_dir, check=False):
         init = tf.compat.v1.global_variables_initializer()
         with tf.compat.v1.Session() as sess:
             sess.run(init)
-            saver = tf.compat.v1.train.Saver()
 
             image_ph = tf.compat.v1.placeholder(tf.float32, shape=[1, None, None, 3], name='image')
             outputs = build_network(image_ph, layers, variables)
@@ -249,25 +249,13 @@ def convert(model_id, model_dir, check=False):
                 }
             )
 
-            save_path = os.path.join(model_dir, 'checkpoints', 'model-%s.ckpt' % chkpoint)
-            if not os.path.exists(os.path.dirname(save_path)):
-                os.makedirs(os.path.dirname(save_path))
-            checkpoint_path = saver.save(sess, save_path, write_state=False)
+            save_path = os.path.join(model_dir, 'model-%s' % chkpoint)
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)
 
-            tf.io.write_graph(cg, model_dir, "model-%s.pbtxt" % chkpoint)
-
-            # Freeze graph and write our final model file
-            freeze_graph(
-                input_graph=os.path.join(model_dir, "model-%s.pbtxt" % chkpoint),
-                input_saver="",
-                input_binary=False,
-                input_checkpoint=checkpoint_path,
-                output_node_names='heatmap,offset_2,displacement_fwd_2,displacement_bwd_2',
-                restore_op_name="save/restore_all",
-                filename_tensor_name="save/Const:0",
-                output_graph=os.path.join(model_dir, "model-%s.pb" % chkpoint),
-                clear_devices=True,
-                initializer_nodes="")
+            builder = tf.compat.v1.saved_model.Builder(save_path)
+            builder.add_meta_graph_and_variables(sess, tags=[tf.saved_model.SERVING])
+            builder.save()
 
             if check and os.path.exists("./images/tennis_in_crowd.jpg"):
                 # Result
