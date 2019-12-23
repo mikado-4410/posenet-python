@@ -86,4 +86,3 @@ The Python conversion code that started me on my way was adapted from the CoreML
 * Performance improvements (especially edge loops in 'decode.py')
 * OpenGL rendering/drawing
 * Comment interfaces, tensor dimensions, etc
-
