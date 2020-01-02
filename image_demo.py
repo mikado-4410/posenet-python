@@ -5,6 +5,8 @@ import argparse
 import os
 
 import posenet
+import posenet.converter.tfjs2tf as tfjs2tf
+import posenet.converter.tfjsdownload as tfjsdownload
 
 
 parser = argparse.ArgumentParser()
@@ -18,9 +20,12 @@ args = parser.parse_args()
 
 def main():
 
+    model = 'posenet'
+    neuralnet = 'mobilenet_v1_100' # mobilenet_v1_100 resnet50_v1
+    model_variant = 'stride16'
+
     with tf.compat.v1.Session() as sess:
-        model_cfg, model_outputs = posenet.load_model(args.model, sess)
-        output_stride = model_cfg['output_stride']
+        output_stride, model_outputs = posenet.load_tf_model(sess, model, neuralnet, model_variant)
 
         if args.output_dir:
             if not os.path.exists(args.output_dir):
@@ -34,10 +39,14 @@ def main():
             input_image, draw_image, output_scale = posenet.read_imgfile(
                 f, scale_factor=args.scale_factor, output_stride=output_stride)
 
+            model_cfg = tfjsdownload.model_config(model, neuralnet, model_variant)
+            input_tensor_name = model_cfg['input_tensors'][0]
+
+            # ORDER OF THE FEATURES IS DEPENDENT ON THE config.yaml file output_tensors list!!!
             heatmaps_result, offsets_result, displacement_fwd_result, displacement_bwd_result = sess.run(
-                model_outputs,
-                feed_dict={'image:0': input_image}
-            )
+                    model_outputs,
+                    feed_dict={input_tensor_name: input_image}
+                )
 
             pose_scores, keypoint_scores, keypoint_coords = posenet.decode_multiple_poses(
                 heatmaps_result.squeeze(axis=0),

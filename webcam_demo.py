@@ -17,8 +17,7 @@ args = parser.parse_args()
 
 def main():
     with tf.compat.v1.Session() as sess:
-        model_cfg, model_outputs = posenet.load_model(args.model, sess)
-        output_stride = model_cfg['output_stride']
+        output_stride, model_outputs = posenet.load_model(args.model, sess)
 
         if args.file is not None:
             cap = cv2.VideoCapture(args.file)

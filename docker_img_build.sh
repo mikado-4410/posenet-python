@@ -8,12 +8,12 @@ fi
 
 if [ "$1" = "GPU" ]; then
   image="posenet-python-gpu"
-  dockerfile="Dockerfile-gpu"
+  version="--build-arg IMAGE_VERSION=2.0.0-gpu-py3-jupyter"
 else
   image="posenet-python-cpu"
-  dockerfile="Dockerfile"
+  version=""
 fi
 
 docker rmi -f "$image"
 
-docker build -t "$image" -f "$dockerfile" .
+docker build -t "$image" $version .

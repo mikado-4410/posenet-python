@@ -1,8 +1,11 @@
 images/*
 output/*
+output_old/*
 .idea/*
 .idea
 _models/*
+_tf_models/*
+_tfjs_models/*
 _posenet_weights/*
 env.sh
 

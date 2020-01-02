@@ -1,6 +1,9 @@
 import tensorflow as tf
 import os
 import posenet.converter.config
+import posenet.converter.tfjsdownload as tfjsdownload
+import posenet.converter.tfjs2tf as tfjs2tf
+
 
 MODEL_DIR = './_models'
 DEBUG_OUTPUT = False
@@ -32,6 +35,26 @@ def load_config(model_ord):
     return model_cfg
 
 
+def load_tf_model(sess, model, neuralnet, model_variant):
+    model_cfg = tfjsdownload.model_config(model, neuralnet, model_variant)
+    model_path = model_cfg['tf_dir']
+    if not os.path.exists(model_path):
+        print('Cannot find tf model path %s, converting from tfjs...' % model_path)
+        tfjs2tf.convert(model, neuralnet, model_variant)
+        assert os.path.exists(model_path)
+
+    sess.graph.as_default()
+    tf.compat.v1.saved_model.loader.load(sess, ["serve"], model_path)
+
+    output_tensors_names = model_cfg['output_tensors']
+
+    output_tensors = []
+    for name in output_tensors_names:
+        output_tensors.append(sess.graph.get_tensor_by_name(name))
+
+    return model_cfg['output_stride'], output_tensors
+
+
 def load_model(model_id, sess, model_dir=MODEL_DIR):
     model_ord = model_id_to_ord(model_id)
     model_cfg = load_config(model_ord)
@@ -57,4 +80,4 @@ def load_model(model_id, sess, model_dir=MODEL_DIR):
     displacement_bwd = sess.graph.get_tensor_by_name('displacement_bwd_2:0')
     heatmaps = sess.graph.get_tensor_by_name('heatmap:0')
 
-    return model_cfg, [heatmaps, offsets, displacement_fwd, displacement_bwd]
+    return model_cfg['output_stride'], [heatmaps, offsets, displacement_fwd, displacement_bwd]

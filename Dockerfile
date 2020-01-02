@@ -1,5 +1,7 @@
-FROM tensorflow/tensorflow:nightly-py3-jupyter
-# This is the CPU version!
+# default image version, override using --build-arg IMAGE_VERSION=otherversion
+ARG IMAGE_VERSION=nightly-py3-jupyter
+FROM tensorflow/tensorflow:$IMAGE_VERSION
+# The default version is the CPU version!
 # see: https://www.tensorflow.org/install/docker
 # see: https://hub.docker.com/r/tensorflow/tensorflow/
 

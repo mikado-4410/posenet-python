@@ -20,8 +20,10 @@ echo "device is: $POSENET_PYTHON_DEVICE"
 
 if [ "$POSENET_PYTHON_DEVICE" = "GPU" ]; then
   image="posenet-python-gpu"
+  gpu_opts="--gpus all"
 else
   image="posenet-python-cpu"
+  gpu_opts=""
 fi
 
-docker run --gpus all -it --rm -v $WORK:/work "$image" python "$@"
+docker run $gpu_opts -it --rm -v $WORK:/work "$image" python "$@"
