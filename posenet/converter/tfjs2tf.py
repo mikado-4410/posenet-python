@@ -9,7 +9,7 @@ def convert(model, neuralnet, model_variant):
     model_file_path = os.path.join(model_cfg['tfjs_dir'], model_cfg['filename'])
     if not os.path.exists(model_file_path):
         print('Cannot find tfjs model path %s, downloading tfjs model...' % model_file_path)
-        tfjsdownload.download_tfjs_model(model, neuralnet, model_variant, model_cfg['data_format'])
+        tfjsdownload.download_tfjs_model(model, neuralnet, model_variant)
     tfjs.api.graph_model_to_saved_model(model_cfg['tfjs_dir'], model_cfg['tf_dir'], ['serve'])
 
 

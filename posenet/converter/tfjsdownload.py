@@ -106,11 +106,10 @@ def download_single_file(base_url, filename, save_dir):
         f.write(data)
 
 
-def download_tfjs_model(model, neuralnet, model_variant, data_format):
+def download_tfjs_model(model, neuralnet, model_variant):
     """
     Download a tfjs model with saved weights.
 
-    :param data_format:
     :param model: The model, e.g. 'bodypix'
     :param neuralnet: The neural net used, e.g. 'resnet50'
     :param model_variant: The reference to the model file, e.g. 'stride16'
