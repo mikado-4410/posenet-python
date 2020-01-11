@@ -1,5 +1,9 @@
 ## PoseNet Python
 
+This repository is a clone of rwightman/posenet-python that is under heavy refactoring to get it to work with the latest 
+tfjs graph serialization and to expand it with the ResNet50 network, all on TF2.0. Heavy cleanup is to be expected when 
+we get the basics running on all the latest models. Best look at the docker scripts to get things running.  
+
 This repository contains a pure Python implementation (multi-pose only) of the Google TensorFlow.js Posenet model. For a (slightly faster) PyTorch implementation that followed from this, see (https://github.com/rwightman/posenet-pytorch)
 
 I first adapted the JS code more or less verbatim and found the performance was low so made some vectorized numpy/scipy version of a few key functions (named `_fast`).
