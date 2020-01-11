@@ -130,4 +130,3 @@ def download_tfjs_model(model, neuralnet, model_variant, data_format):
     shard_paths = json_model_def['weightsManifest'][0]['paths']
     for shard in shard_paths:
         download_single_file(model_cfg['base_url'], shard, model_cfg['tfjs_dir'])
-

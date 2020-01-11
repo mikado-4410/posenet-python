@@ -4,6 +4,7 @@ import argparse
 import os
 
 import posenet
+import posenet.converter.tfjsdownload as tfjsdownload
 
 
 parser = argparse.ArgumentParser()
@@ -15,8 +16,12 @@ args = parser.parse_args()
 
 def main():
 
+    model = 'posenet'  # posenet bodypix
+    neuralnet = 'resnet50_v1'  # mobilenet_v1_100 resnet50_v1
+    model_variant = 'stride32'  # stride16 stride32
+
     with tf.compat.v1.Session() as sess:
-        output_stride, model_outputs = posenet.load_model(args.model, sess)
+        output_stride, model_outputs = posenet.load_tf_model(sess, model, neuralnet, model_variant)
         num_images = args.num_images
 
         filenames = [
@@ -26,11 +31,14 @@ def main():
 
         images = {f: posenet.read_imgfile(f, 1.0, output_stride)[0] for f in filenames}
 
+        model_cfg = tfjsdownload.model_config(model, neuralnet, model_variant)
+        input_tensor_name = model_cfg['input_tensors']['image']
+
         start = time.time()
         for i in range(num_images):
             heatmaps_result, offsets_result, displacement_fwd_result, displacement_bwd_result = sess.run(
                 model_outputs,
-                feed_dict={'image:0': images[filenames[i % len(filenames)]]}
+                feed_dict={input_tensor_name: images[filenames[i % len(filenames)]]}
             )
 
             output = posenet.decode_multiple_poses(

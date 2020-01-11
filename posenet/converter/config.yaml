@@ -11,11 +11,11 @@ models:
         input_tensors:
           image: 'sub_2:0'
         output_tensors:
-          heatmaps: 'float_heatmaps:0'
+          heatmap: 'float_heatmaps:0'
           offsets: 'float_short_offsets:0'
           displacement_fwd: 'resnet_v1_50/displacement_fwd_2/BiasAdd:0'
           displacement_bwd: 'resnet_v1_50/displacement_bwd_2/BiasAdd:0'
-          part_heatmaps: 'float_part_heatmaps:0'
+          part_heatmap: 'float_part_heatmaps:0'
           part_offsets: 'float_part_offsets:0'
           long_offsets: 'float_long_offsets:0'
           segments: 'float_segments:0'
@@ -29,11 +29,11 @@ models:
         input_tensors:
           image: 'sub_2:0'
         output_tensors:
-          heatmaps: 'float_heatmaps:0'
+          heatmap: 'float_heatmaps:0'
           offsets: 'float_short_offsets:0'
           displacement_fwd: 'MobilenetV1/displacement_fwd_2/BiasAdd:0'
           displacement_bwd: 'MobilenetV1/displacement_bwd_2/BiasAdd:0'
-          part_heatmaps: 'float_part_heatmaps:0'
+          part_heatmap: 'float_part_heatmaps:0'
           part_offsets: 'float_part_offsets:0'
           long_offsets: 'float_long_offsets:0'
           segments: 'float_segments:0'
@@ -52,7 +52,7 @@ models:
         input_tensors:
           image: 'sub_2:0'
         output_tensors:
-          heatmaps: 'float_heatmaps:0'
+          heatmap: 'float_heatmaps:0'
           offsets: 'float_short_offsets:0'
           displacement_fwd: 'resnet_v1_50/displacement_fwd_2/BiasAdd:0'
           displacement_bwd: 'resnet_v1_50/displacement_bwd_2/BiasAdd:0'
@@ -66,63 +66,8 @@ models:
         input_tensors:
           image: 'sub_2:0'
         output_tensors:
-          heatmaps: 'MobilenetV1/heatmap_2/BiasAdd:0'
+          heatmap: 'MobilenetV1/heatmap_2/BiasAdd:0'
           offsets: 'MobilenetV1/offset_2/BiasAdd:0'
           displacement_fwd: 'MobilenetV1/displacement_fwd_2/BiasAdd:0'
           displacement_bwd: 'MobilenetV1/displacement_bwd_2/BiasAdd:0'
 
-
-
-chk: 3 # 3=mobilenet_v1_101
-imageSize: 513
-GOOGLE_CLOUD_STORAGE_DIR: 'https://storage.googleapis.com/tfjs-models/weights/posenet/'
-checkpoints: [ 'mobilenet_v1_050', 'mobilenet_v1_075', 'mobilenet_v1_100', 'mobilenet_v1_101']
-outputStride: 16
-mobileNet100Architecture: [
-  ['conv2d', 2],
-  ['separableConv', 1],
-  ['separableConv', 2],
-  ['separableConv', 1],
-  ['separableConv', 2],
-  ['separableConv', 1],
-  ['separableConv', 2],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 2],
-  ['separableConv', 1]
-]
-mobileNet75Architecture: [ 
-  ['conv2d', 2],
-  ['separableConv', 1],
-  ['separableConv', 2],
-  ['separableConv', 1],
-  ['separableConv', 2],
-  ['separableConv', 1],
-  ['separableConv', 2],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1]
-]
-mobileNet50Architecture: [
-  ['conv2d', 2],
-  ['separableConv', 1],
-  ['separableConv', 2],
-  ['separableConv', 1],
-  ['separableConv', 2],
-  ['separableConv', 1],
-  ['separableConv', 2],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1],
-  ['separableConv', 1]
-]

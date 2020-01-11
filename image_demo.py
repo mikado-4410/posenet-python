@@ -5,7 +5,6 @@ import argparse
 import os
 
 import posenet
-import posenet.converter.tfjs2tf as tfjs2tf
 import posenet.converter.tfjsdownload as tfjsdownload
 
 
@@ -24,8 +23,8 @@ def main():
     assert tf.__version__.startswith('2.'), "Tensorflow version 2.x must be used!"
 
     model = 'posenet' # posenet bodypix
-    neuralnet = 'resnet50_v1' # mobilenet_v1_100 resnet50_v1
-    model_variant = 'stride32' # stride16 stride32
+    neuralnet = 'mobilenet_v1_100' # mobilenet_v1_100 resnet50_v1
+    model_variant = 'stride16' # stride16 stride32
 
     with tf.compat.v1.Session() as sess:
         output_stride, model_outputs = posenet.load_tf_model(sess, model, neuralnet, model_variant)
@@ -46,14 +45,14 @@ def main():
             input_tensor_name = model_cfg['input_tensors']['image']
 
             # ORDER OF THE FEATURES IS DEPENDENT ON THE config.yaml file output_tensors list!!!
-            heatmaps_result, offsets_result, displacement_fwd_result, displacement_bwd_result = sess.run(
+            heatmap_result, offsets_result, displacement_fwd_result, displacement_bwd_result = sess.run(
                     model_outputs,
                     feed_dict={input_tensor_name: input_image}
                 )
 
             min_score = 0.25
             pose_scores, keypoint_scores, keypoint_coords = posenet.decode_multiple_poses(
-                heatmaps_result.squeeze(axis=0),
+                heatmap_result.squeeze(axis=0),
                 offsets_result.squeeze(axis=0),
                 displacement_fwd_result.squeeze(axis=0),
                 displacement_bwd_result.squeeze(axis=0),

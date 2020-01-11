@@ -39,7 +39,7 @@ requirement is that you have a Linux machine with a GPU set up with docker, the 
 up, you can make as many images as you want with different depencencies without touching your host OS (or fiddling with conda).  
 
 ```bash
-./docker_img_build.sh
+./docker_img_build.sh GPU 
 ./get_test_images_run.sh
 ./image_demo_run.sh
 ``` 
