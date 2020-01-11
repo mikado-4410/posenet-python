@@ -46,11 +46,14 @@ def load_tf_model(sess, model, neuralnet, model_variant):
     sess.graph.as_default()
     tf.compat.v1.saved_model.loader.load(sess, ["serve"], model_path)
 
-    output_tensors_names = model_cfg['output_tensors']
+    output_tensor_map = model_cfg['output_tensors']
 
-    output_tensors = []
-    for name in output_tensors_names:
-        output_tensors.append(sess.graph.get_tensor_by_name(name))
+    output_tensors = [
+        tf.sigmoid(sess.graph.get_tensor_by_name(output_tensor_map['heatmaps']), 'heatmaps'),
+        sess.graph.get_tensor_by_name(output_tensor_map['offsets']),
+        sess.graph.get_tensor_by_name(output_tensor_map['displacement_fwd']),
+        sess.graph.get_tensor_by_name(output_tensor_map['displacement_bwd'])
+    ]
 
     return model_cfg['output_stride'], output_tensors
 

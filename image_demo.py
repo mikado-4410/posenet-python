@@ -20,9 +20,12 @@ args = parser.parse_args()
 
 def main():
 
-    model = 'posenet'
-    neuralnet = 'mobilenet_v1_100' # mobilenet_v1_100 resnet50_v1
-    model_variant = 'stride16'
+    print('Tensorflow version: %s' % tf.__version__)
+    assert tf.__version__.startswith('2.'), "Tensorflow version 2.x must be used!"
+
+    model = 'posenet' # posenet bodypix
+    neuralnet = 'resnet50_v1' # mobilenet_v1_100 resnet50_v1
+    model_variant = 'stride32' # stride16 stride32
 
     with tf.compat.v1.Session() as sess:
         output_stride, model_outputs = posenet.load_tf_model(sess, model, neuralnet, model_variant)
@@ -40,7 +43,7 @@ def main():
                 f, scale_factor=args.scale_factor, output_stride=output_stride)
 
             model_cfg = tfjsdownload.model_config(model, neuralnet, model_variant)
-            input_tensor_name = model_cfg['input_tensors'][0]
+            input_tensor_name = model_cfg['input_tensors']['image']
 
             # ORDER OF THE FEATURES IS DEPENDENT ON THE config.yaml file output_tensors list!!!
             heatmaps_result, offsets_result, displacement_fwd_result, displacement_bwd_result = sess.run(
@@ -48,6 +51,7 @@ def main():
                     feed_dict={input_tensor_name: input_image}
                 )
 
+            min_score = 0.25
             pose_scores, keypoint_scores, keypoint_coords = posenet.decode_multiple_poses(
                 heatmaps_result.squeeze(axis=0),
                 offsets_result.squeeze(axis=0),
@@ -55,14 +59,14 @@ def main():
                 displacement_bwd_result.squeeze(axis=0),
                 output_stride=output_stride,
                 max_pose_detections=10,
-                min_pose_score=0.25)
+                min_pose_score=min_score)
 
             keypoint_coords *= output_scale
 
             if args.output_dir:
                 draw_image = posenet.draw_skel_and_kp(
                     draw_image, pose_scores, keypoint_scores, keypoint_coords,
-                    min_pose_score=0.25, min_part_score=0.25)
+                    min_pose_score=min_score, min_part_score=min_score)
 
                 cv2.imwrite(os.path.join(args.output_dir, os.path.relpath(f, args.image_dir)), draw_image)
 

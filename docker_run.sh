@@ -6,15 +6,14 @@ if [ -z "$POSENET_PYTHON_DEVICE" ]; then
   echo "set the environment variable POSENET_PYTHON_DEVICE to CPU or GPU, or enter your choice below:"
   read -p "Enter your device (CPU or GPU): "  device
   if [ "$device" = "GPU" ]; then
-    source <(echo "export POSENET_PYTHON_DEVICE=GPU");
+    source exportGPU.sh
   elif [ "$device" = "CPU" ]; then
-    source <(echo "export POSENET_PYTHON_DEVICE=CPU");
+    source exportCPU.sh
   else
     echo "Device configuration failed..."
     exit 1
   fi
 fi
-
 
 echo "device is: $POSENET_PYTHON_DEVICE"
 

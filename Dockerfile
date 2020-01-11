@@ -17,11 +17,12 @@ COPY requirements.txt /work/
 
 WORKDIR /work
 
-RUN pip install -r requirements.txt
+# run pip install with the '--no-deps' argument, to avoid that tensorflowjs installs an old version of tensorflow!
+RUN pip install -r requirements.txt --no-deps
 
 RUN git clone https://github.com/patlevin/tfjs-to-tf.git && \
     cd tfjs-to-tf && \
-    pip install . && \
+    pip install . --no-deps && \
     cd .. && \
     rm -r tfjs-to-tf
 
