@@ -1,13 +1,21 @@
 from posenet.base_model import BaseModel
+import numpy as np
+import cv2
 
 
 class ResNet(BaseModel):
 
-    def __init__(self, output_stride):
-        super().__init__(output_stride)
+    def __init__(self, sess, input_tensor_name, output_tensor_names, output_stride):
+        super().__init__(sess, input_tensor_name, output_tensor_names, output_stride)
+        self.image_net_mean = [-123.15, -115.90, -103.06]
 
-    def preprocess_input(self):
-        return self
+    def preprocess_input(self, image):
+        target_width, target_height = self.valid_resolution(image.shape[1], image.shape[0])
+        # the scale that can get us back to the original width and height:
+        scale = np.array([image.shape[0] / target_height, image.shape[1] / target_width])
+        input_img = cv2.resize(image, (target_width, target_height), interpolation=cv2.INTER_LINEAR)
+        input_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2RGB).astype(np.float32)  # to RGB colors
 
-    def name_output_results(self, graph):
-        return graph
+        input_img = input_img + self.image_net_mean
+        input_img = input_img.reshape(1, target_height, target_width, 3)  # NHWC
+        return input_img, scale
