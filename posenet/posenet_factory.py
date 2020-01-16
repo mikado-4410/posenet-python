@@ -16,17 +16,17 @@ def load_model(model, neuralnet, model_variant):
         tfjs2tf.convert(model, neuralnet, model_variant)
         assert os.path.exists(model_path)
 
-    with tf.compat.v1.Session() as sess:
+    sess = tf.compat.v1.Session()
 
-        sess.graph.as_default()
-        tf.compat.v1.saved_model.loader.load(sess, ["serve"], model_path)
+    sess.graph.as_default()
+    tf.compat.v1.saved_model.loader.load(sess, ["serve"], model_path)
 
-        output_tensor_names = model_cfg['output_tensors']
-        input_tensor_name = model_cfg['input_tensors']['image']
+    output_tensor_names = model_cfg['output_tensors']
+    input_tensor_name = model_cfg['input_tensors']['image']
 
-        if neuralnet == 'resnet50_v1':
-            net = ResNet(sess, input_tensor_name, output_tensor_names, model_cfg['output_stride'])
-        else:
-            net = MobileNet(sess, input_tensor_name, output_tensor_names, model_cfg['output_stride'])
+    if neuralnet == 'resnet50_v1':
+        net = ResNet(sess, input_tensor_name, output_tensor_names, model_cfg['output_stride'])
+    else:
+        net = MobileNet(sess, input_tensor_name, output_tensor_names, model_cfg['output_stride'])
 
-        return PoseNet(net)
+    return PoseNet(net)

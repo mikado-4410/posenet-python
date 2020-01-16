@@ -32,3 +32,6 @@ class BaseModel(ABC):
             feed_dict={self.input_tensor_name: input_image}
         )
         return heatmap_result, offsets_result, displacement_fwd_result, displacement_bwd_result, image_scale
+
+    def close(self):
+        self.sess.close()
