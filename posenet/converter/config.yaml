@@ -70,4 +70,3 @@ models:
           offsets: 'MobilenetV1/offset_2/BiasAdd:0'
           displacement_fwd: 'MobilenetV1/displacement_fwd_2/BiasAdd:0'
           displacement_bwd: 'MobilenetV1/displacement_bwd_2/BiasAdd:0'
-

@@ -45,20 +45,3 @@ def convert(model, neuralnet, model_variant):
                                              tags=['serve'],
                                              signature_def_map=signature_map)
     return builder.save()
-
-
-def list_tensors(model, neuralnet, model_variant):
-    model_cfg = tfjsdownload.model_config(model, neuralnet, model_variant)
-    graph = tfjs.api.load_graph_model(model_cfg['tfjs_dir'])
-    with tf.compat.v1.Session(graph=graph) as sess:
-        # the module provides some helpers for querying model properties
-        input_tensor_names = tfjs.util.get_input_tensors(graph)
-        output_tensor_names = tfjs.util.get_output_tensors(graph)
-
-        print('input tensors:')
-        for it in input_tensor_names:
-            print(it)
-        print('--')
-        print('output tensors:')
-        for ot in output_tensor_names:
-            print(ot)

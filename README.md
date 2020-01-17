@@ -32,6 +32,9 @@ The GPU version is tested on a Linux machine. You need to install the nvidia hos
 Once set up, you can make as many images as you want with different dependencies without touching your host OS 
 (or fiddling with conda).  
 
+If you just want to test this code, you can run everything on a CPU just as well. You still get 8fps on mobilenet and 
+4fps on resnet50. Replace `GPU` below with `CPU` to test on a CPU.
+
 ```bash
 ./docker_img_build.sh GPU 
 . ./exportGPU.sh
