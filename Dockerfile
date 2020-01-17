@@ -1,5 +1,5 @@
 # default image version, override using --build-arg IMAGE_VERSION=otherversion
-ARG IMAGE_VERSION=nightly-py3-jupyter
+ARG IMAGE_VERSION=2.1.0-py3-jupyter
 FROM tensorflow/tensorflow:$IMAGE_VERSION
 # The default version is the CPU version!
 # see: https://www.tensorflow.org/install/docker
@@ -18,6 +18,8 @@ COPY requirements.txt /work/
 WORKDIR /work
 
 # run pip install with the '--no-deps' argument, to avoid that tensorflowjs installs an old version of tensorflow!
+# It also ensures that we know and controll the transitive dependencies (although the tensorflow docker image comes
+# with a lot of packages pre-installed).
 RUN pip install -r requirements.txt --no-deps
 
 RUN git clone https://github.com/patlevin/tfjs-to-tf.git && \

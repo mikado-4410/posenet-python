@@ -1,10 +1,9 @@
 import tensorflow as tf
+import cv2
 import time
 import argparse
 import os
-
-import posenet
-import posenet.converter.tfjsdownload as tfjsdownload
+from posenet.posenet_factory import load_model
 
 
 parser = argparse.ArgumentParser()
@@ -16,41 +15,29 @@ args = parser.parse_args()
 
 def main():
 
+    print('Tensorflow version: %s' % tf.__version__)
+    assert tf.__version__.startswith('2.'), "Tensorflow version 2.x must be used!"
+
     model = 'posenet'  # posenet bodypix
     neuralnet = 'resnet50_v1'  # mobilenet_v1_100 resnet50_v1
     model_variant = 'stride32'  # stride16 stride32
 
-    with tf.compat.v1.Session() as sess:
-        output_stride, model_outputs = posenet.load_tf_model(sess, model, neuralnet, model_variant)
-        num_images = args.num_images
+    posenet = load_model(model, neuralnet, model_variant)
 
-        filenames = [
-            f.path for f in os.scandir(args.image_dir) if f.is_file() and f.path.endswith(('.png', '.jpg'))]
-        if len(filenames) > num_images:
-            filenames = filenames[:num_images]
+    num_images = args.num_images
+    filenames = [
+        f.path for f in os.scandir(args.image_dir) if f.is_file() and f.path.endswith(('.png', '.jpg'))]
+    if len(filenames) > num_images:
+        filenames = filenames[:num_images]
 
-        images = {f: posenet.read_imgfile(f, 1.0, output_stride)[0] for f in filenames}
+    images = {f: cv2.imread(f) for f in filenames}
 
-        model_cfg = tfjsdownload.model_config(model, neuralnet, model_variant)
-        input_tensor_name = model_cfg['input_tensors']['image']
+    start = time.time()
+    for i in range(num_images):
+        image = images[filenames[i % len(filenames)]]
+        posenet.estimate_multiple_poses(image)
 
-        start = time.time()
-        for i in range(num_images):
-            heatmaps_result, offsets_result, displacement_fwd_result, displacement_bwd_result = sess.run(
-                model_outputs,
-                feed_dict={input_tensor_name: images[filenames[i % len(filenames)]]}
-            )
-
-            output = posenet.decode_multiple_poses(
-                heatmaps_result.squeeze(axis=0),
-                offsets_result.squeeze(axis=0),
-                displacement_fwd_result.squeeze(axis=0),
-                displacement_bwd_result.squeeze(axis=0),
-                output_stride=output_stride,
-                max_pose_detections=10,
-                min_pose_score=0.25)
-
-        print('Average FPS:', num_images / (time.time() - start))
+    print('Average FPS:', num_images / (time.time() - start))
 
 
 if __name__ == "__main__":

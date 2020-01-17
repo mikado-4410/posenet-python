@@ -16,38 +16,22 @@ def load_model(model, neuralnet, model_variant):
         tfjs2tf.convert(model, neuralnet, model_variant)
         assert os.path.exists(model_path)
 
-    # sess = tf.compat.v1.Session()
-    # output_tensors = load_tensors(sess, model_path, input_tensor_name, output_tensor_names)
-
     loaded_model = tf.saved_model.load(model_path)
-    print('type of model_function: %s ' % type(loaded_model))
+
+    signature_key = tf.compat.v1.saved_model.signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY
+    print('We use the signature key %s It should be in the keys list:' % signature_key)
     for sig in loaded_model.signatures.keys():
-        print('key: %s' % sig)
-    model_function = loaded_model.signatures["serving_default"]
-    print(model_function.structured_outputs)
+        print('signature key: %s' % sig)
+
+    model_function = loaded_model.signatures[signature_key]
+    print('model outputs: %s' % model_function.structured_outputs)
 
     output_tensor_names = model_cfg['output_tensors']
+    output_stride = model_cfg['output_stride']
 
     if neuralnet == 'resnet50_v1':
-        net = ResNet(model_function, output_tensor_names, model_cfg['output_stride'])  # sess, input_tensor_name, output_tensors,
+        net = ResNet(model_function, output_tensor_names, output_stride)
     else:
-        # net = MobileNet(sess, input_tensor_name, output_tensors, model_cfg['output_stride'])
-        net = MobileNet(model_function, output_tensor_names, model_cfg['output_stride'])
+        net = MobileNet(model_function, output_tensor_names, output_stride)
 
     return PoseNet(net)
-
-
-def __unused_load_tensors(sess, model_path, input_tensor_name, output_tensor_names):
-
-    sess.graph.as_default()
-    # tf.compat.v1.saved_model.loader.load(sess, ["serve"], model_path)
-    tf.saved_model.load(model_path, ["serve"])
-
-    output_tensors = [
-        tf.sigmoid(sess.graph.get_tensor_by_name(output_tensor_names['heatmap']), 'heatmap'),  # sigmoid!!!
-        sess.graph.get_tensor_by_name(output_tensor_names['offsets']),
-        sess.graph.get_tensor_by_name(output_tensor_names['displacement_fwd']),
-        sess.graph.get_tensor_by_name(output_tensor_names['displacement_bwd'])
-    ]
-
-    return output_tensors

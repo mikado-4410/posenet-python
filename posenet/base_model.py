@@ -14,9 +14,6 @@ class BaseModel(ABC):
         self.output_stride = output_stride
         self.output_tensor_names = output_tensor_names
         self.model_function = model_function
-        # self.sess = sess
-        # self.input_tensor_name = input_tensor_name
-        # self.output_tensors = output_tensors
 
     def valid_resolution(self, width, height):
         # calculate closest smaller width and height that is divisible by the stride after subtracting 1 (for the bias?)
@@ -39,12 +36,6 @@ class BaseModel(ABC):
         offsets_result = result[self.output_tensor_names[self.OFFSETS_KEY]]
         displacement_fwd_result = result[self.output_tensor_names[self.DISPLACEMENT_FWD_KEY]]
         displacement_bwd_result  = result[self.output_tensor_names[self.DISPLACEMENT_BWD_KEY]]
-
-
-            # self.sess.run(
-            # self.output_tensors,
-            # feed_dict={self.input_tensor_name: input_image}
-        # )
 
         return tf.sigmoid(heatmap_result), offsets_result, displacement_fwd_result, displacement_bwd_result, image_scale
 

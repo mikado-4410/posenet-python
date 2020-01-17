@@ -1,50 +1,45 @@
 ## PoseNet Python
 
-This repository is a clone of rwightman/posenet-python that is under heavy refactoring to get it to work with the latest 
-tfjs graph serialization and to expand it with the ResNet50 network, all on TF2.0. Heavy cleanup is to be expected when 
-we get the basics running on all the latest models. Best look at the docker scripts to get things running.  
+This repository originates from rwightman/posenet-python and has been heavily refactored to 
+ * make it run the posenet v2 networks 
+ * get it to work with the latest tfjs graph serialization 
+ * extend it with the ResNet50 network
+ * make the code run on TF2.0
+ * get all code running in docker containers for ease of use and installation (no conda necessary)
 
-This repository contains a pure Python implementation (multi-pose only) of the Google TensorFlow.js Posenet model. For a (slightly faster) PyTorch implementation that followed from this, see (https://github.com/rwightman/posenet-pytorch)
-
-I first adapted the JS code more or less verbatim and found the performance was low so made some vectorized numpy/scipy version of a few key functions (named `_fast`).
-
-Further optimization is possible
-* The base MobileNet models have a throughput of 200-300 fps on a GTX 1080 Ti (or better)
-* The multi-pose post processing code brings this rate down significantly. With a fast CPU and a GTX 1080+:
-  * A literal translation of the JS post processing code dropped performance to approx 30fps
-  * My 'fast' post processing results in 90-110fps
-* A Cython or pure C++ port would be even better...  
+This repository contains a pure Python implementation (multi-pose only) of the Google TensorFlow.js Posenet model. 
+For a (slightly faster) PyTorch implementation that followed from this, 
+see (https://github.com/rwightman/posenet-pytorch)
+  
 
 ### Install
 
-A suitable Python 3.x environment with a recent version of Tensorflow is required.
+A suitable Python 3.x environment with Tensorflow 2.x.
 
-Development and testing was done with Conda Python 3.6.8 and Tensorflow 1.12.0 on Linux.
+If you want to use the webcam demo, a pip version of opencv (`pip install opencv-python`) is required instead of 
+the conda version. Anaconda's default opencv does not include ffpmeg/VideoCapture support. Also, you may have to 
+force install version 3.4.x as 4.x has a broken drawKeypoints binding.
 
-Windows 10 with the latest (as of 2019-01-19) 64-bit Python 3.7 Anaconda installer was also tested.
-
-If you want to use the webcam demo, a pip version of opencv (`pip install opencv-python`) is required instead of the conda version. Anaconda's default opencv does not include ffpmeg/VideoCapture support. Also, you may have to force install version 3.4.x as 4.x has a broken drawKeypoints binding.
-
-A conda environment setup as below should suffice: 
-```
-conda install tensorflow-gpu scipy pyyaml python=3.6
-pip install opencv-python==3.4.5.20
-
-```
+Have a look at the docker configuration for a quick setup. If you want conda, have a look at the `requirements.txt` 
+file to see what you should install.
 
 ### Using Docker 
 
-A convenient way to run this project is by building and running the docker image, because it has all the requirements built-in. The main 
-requirement is that you have a Linux machine with a GPU set up with docker, the nvidia host driver and the nvidia-docker toolkit. Once set 
-up, you can make as many images as you want with different depencencies without touching your host OS (or fiddling with conda).  
+A convenient way to run this project is by building and running the docker image, because it has all the requirements 
+built-in. 
+The GPU version is tested on a Linux machine. You need to install the nvidia host driver and the nvidia-docker toolkit. 
+Once set up, you can make as many images as you want with different dependencies without touching your host OS 
+(or fiddling with conda).  
 
 ```bash
 ./docker_img_build.sh GPU 
+. ./exportGPU.sh
 ./get_test_images_run.sh
 ./image_demo_run.sh
 ``` 
 
-Some pointers to get you going on the Linux machine setup. Most links are based on Ubuntu, but other distributions should work fine as well. 
+Some pointers to get you going on the Linux machine setup. Most links are based on Ubuntu, but other distributions 
+should work fine as well. 
 * [Install docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/ )
 * [Install the NVIDIA host driver](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#ubuntu-installation)
   * remember to reboot here
@@ -54,15 +49,16 @@ Some pointers to get you going on the Linux machine setup. Most links are based 
 
 ### Usage
 
-There are three demo apps in the root that utilize the PoseNet model. They are very basic and could definitely be improved.
+There are three demo apps in the root that utilize the PoseNet model. They are very basic and could definitely be 
+improved.
 
-The first time these apps are run (or the library is used) model weights will be downloaded from the TensorFlow.js version and converted on the fly.
-
-For all demos, the model can be specified with the '--model` argument by using its ordinal id (0-3) or integer depth multiplier (50, 75, 100, 101). The default is the 101 model.
+The first time these apps are run (or the library is used) model weights will be downloaded from the TensorFlow.js 
+version and converted on the fly.
 
 #### image_demo.py 
 
-Image demo runs inference on an input folder of images and outputs those images with the keypoints and skeleton overlayed.
+Image demo runs inference on an input folder of images and outputs those images with the keypoints and skeleton 
+overlayed.
 
 `python image_demo.py --model 101 --image_dir ./images --output_dir ./output`
 
@@ -70,23 +66,26 @@ A folder of suitable test images can be downloaded by first running the `get_tes
 
 #### benchmark.py
 
-A minimal performance benchmark based on image_demo. Images in `--image_dir` are pre-loaded and inference is run `--num_images` times with no drawing and no text output.
+A minimal performance benchmark based on image_demo. Images in `--image_dir` are pre-loaded and inference is 
+run `--num_images` times with no drawing and no text output.
 
 #### webcam_demo.py
 
-The webcam demo uses OpenCV to capture images from a connected webcam. The result is overlayed with the keypoints and skeletons and rendered to the screen. The default args for the webcam_demo assume device_id=0 for the camera and that 1280x720 resolution is possible.
+The webcam demo uses OpenCV to capture images from a connected webcam. The result is overlayed with the keypoints and 
+skeletons and rendered to the screen. The default args for the webcam_demo assume device_id=0 for the camera and 
+that 1280x720 resolution is possible.
 
 ### Credits
 
-The original model, weights, code, etc. was created by Google and can be found at https://github.com/tensorflow/tfjs-models/tree/master/posenet
+The original model, weights, code, etc. was created by Google and can be found at 
+https://github.com/tensorflow/tfjs-models/tree/master/posenet
 
-This port is initially created by Ross Wightman and is in no way related to Google.
+This port is initially created by Ross Wightman and later upgraded by Peter Rigole and is in no way related to Google.
 
-The Python conversion code that started me on my way was adapted from the CoreML port at https://github.com/infocom-tpo/PoseNet-CoreML
+The Python conversion code that started me on my way was adapted from the CoreML port at 
+https://github.com/infocom-tpo/PoseNet-CoreML
 
 ### TODO 
-* Migration to Tensorflow 2.x
-* Adding ResNet50 (PoseNet 2)
 * Performance improvements (especially edge loops in 'decode.py')
 * OpenGL rendering/drawing
 * Comment interfaces, tensor dimensions, etc

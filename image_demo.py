@@ -3,10 +3,7 @@ import cv2
 import time
 import argparse
 import os
-
-import posenet
-import posenet.converter.tfjsdownload as tfjsdownload
-
+from posenet.posenet_factory import load_model
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=int, default=101)
@@ -22,64 +19,29 @@ def main():
     print('Tensorflow version: %s' % tf.__version__)
     assert tf.__version__.startswith('2.'), "Tensorflow version 2.x must be used!"
 
-    model = 'posenet' # posenet bodypix
-    neuralnet = 'mobilenet_v1_100' # mobilenet_v1_100 resnet50_v1
-    model_variant = 'stride16' # stride16 stride32
+    if args.output_dir:
+        if not os.path.exists(args.output_dir):
+            os.makedirs(args.output_dir)
 
-    with tf.compat.v1.Session() as sess:
-        output_stride, model_outputs = posenet.load_tf_model(sess, model, neuralnet, model_variant)
+    model = 'posenet'  # posenet bodypix
+    neuralnet = 'resnet50_v1'  # mobilenet_v1_100 resnet50_v1
+    model_variant = 'stride32'  # stride16 stride32
 
-        if args.output_dir:
-            if not os.path.exists(args.output_dir):
-                os.makedirs(args.output_dir)
+    posenet = load_model(model, neuralnet, model_variant)
 
-        filenames = [
-            f.path for f in os.scandir(args.image_dir) if f.is_file() and f.path.endswith(('.png', '.jpg'))]
+    filenames = [f.path for f in os.scandir(args.image_dir) if f.is_file() and f.path.endswith(('.png', '.jpg'))]
 
-        start = time.time()
-        for f in filenames:
-            input_image, draw_image, output_scale = posenet.read_imgfile(
-                f, scale_factor=args.scale_factor, output_stride=output_stride)
+    start = time.time()
+    for f in filenames:
+        img = cv2.imread(f)
+        pose_scores, keypoint_scores, keypoint_coords = posenet.estimate_multiple_poses(img)
+        img_poses = posenet.draw_poses(img, pose_scores, keypoint_scores, keypoint_coords)
+        posenet.print_scores(f, pose_scores, keypoint_scores, keypoint_coords)
+        cv2.imwrite(os.path.join(args.output_dir, os.path.relpath(f, args.image_dir)), img_poses)
 
-            model_cfg = tfjsdownload.model_config(model, neuralnet, model_variant)
-            input_tensor_name = model_cfg['input_tensors']['image']
+    print('Average FPS:', len(filenames) / (time.time() - start))
 
-            # ORDER OF THE FEATURES IS DEPENDENT ON THE config.yaml file output_tensors list!!!
-            heatmap_result, offsets_result, displacement_fwd_result, displacement_bwd_result = sess.run(
-                    model_outputs,
-                    feed_dict={input_tensor_name: input_image}
-                )
-
-            min_score = 0.25
-            pose_scores, keypoint_scores, keypoint_coords = posenet.decode_multiple_poses(
-                heatmap_result.squeeze(axis=0),
-                offsets_result.squeeze(axis=0),
-                displacement_fwd_result.squeeze(axis=0),
-                displacement_bwd_result.squeeze(axis=0),
-                output_stride=output_stride,
-                max_pose_detections=10,
-                min_pose_score=min_score)
-
-            keypoint_coords *= output_scale
-
-            if args.output_dir:
-                draw_image = posenet.draw_skel_and_kp(
-                    draw_image, pose_scores, keypoint_scores, keypoint_coords,
-                    min_pose_score=min_score, min_part_score=min_score)
-
-                cv2.imwrite(os.path.join(args.output_dir, os.path.relpath(f, args.image_dir)), draw_image)
-
-            if not args.notxt:
-                print()
-                print("Results for image: %s" % f)
-                for pi in range(len(pose_scores)):
-                    if pose_scores[pi] == 0.:
-                        break
-                    print('Pose #%d, score = %f' % (pi, pose_scores[pi]))
-                    for ki, (s, c) in enumerate(zip(keypoint_scores[pi, :], keypoint_coords[pi, :, :])):
-                        print('Keypoint %s, score = %f, coord = %s' % (posenet.PART_NAMES[ki], s, c))
-
-        print('Average FPS:', len(filenames) / (time.time() - start))
+    posenet.close()
 
 
 if __name__ == "__main__":

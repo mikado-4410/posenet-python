@@ -21,10 +21,11 @@ def convert(model, neuralnet, model_variant):
         tfjsdownload.download_tfjs_model(model, neuralnet, model_variant)
 
     # 'graph_model_to_saved_model' doesn't store the signature for the model!
-    # tfjs.api.graph_model_to_saved_model(model_cfg['tfjs_dir'], model_cfg['tf_dir'], ['serve'])
-    # so we do it manually here:
+    #   tfjs.api.graph_model_to_saved_model(model_cfg['tfjs_dir'], model_cfg['tf_dir'], ['serve'])
+    # So we do it manually below.
+    # This link was a great help to do this:
+    # https://www.programcreek.com/python/example/104885/tensorflow.python.saved_model.signature_def_utils.build_signature_def
 
-    # see: https://www.programcreek.com/python/example/104885/tensorflow.python.saved_model.signature_def_utils.build_signature_def
     graph = tfjs.api.load_graph_model(model_cfg['tfjs_dir'])
     builder = tf.compat.v1.saved_model.Builder(model_cfg['tf_dir'])
 

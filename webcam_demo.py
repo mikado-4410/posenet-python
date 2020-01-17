@@ -3,8 +3,8 @@ import cv2
 import time
 import argparse
 
-import posenet
-import posenet.converter.tfjsdownload as tfjsdownload
+from posenet.posenet_factory import load_model
+from posenet.utils import draw_skel_and_kp
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', type=int, default=101)
@@ -18,58 +18,42 @@ args = parser.parse_args()
 
 def main():
 
+    print('Tensorflow version: %s' % tf.__version__)
+    assert tf.__version__.startswith('2.'), "Tensorflow version 2.x must be used!"
+
     model = 'posenet'  # posenet bodypix
     neuralnet = 'resnet50_v1'  # mobilenet_v1_100 resnet50_v1
     model_variant = 'stride32'  # stride16 stride32
 
-    with tf.compat.v1.Session() as sess:
+    posenet = load_model(model, neuralnet, model_variant)
 
-        output_stride, model_outputs = posenet.load_tf_model(sess, model, neuralnet, model_variant)
+    if args.file is not None:
+        cap = cv2.VideoCapture(args.file)
+    else:
+        cap = cv2.VideoCapture(args.cam_id)
+    cap.set(3, args.cam_width)
+    cap.set(4, args.cam_height)
 
-        if args.file is not None:
-            cap = cv2.VideoCapture(args.file)
-        else:
-            cap = cv2.VideoCapture(args.cam_id)
-        cap.set(3, args.cam_width)
-        cap.set(4, args.cam_height)
+    start = time.time()
+    frame_count = 0
 
-        start = time.time()
-        frame_count = 0
+    while True:
+        res, img = cap.read()
+        if not res:
+            raise IOError("webcam failure")
 
-        model_cfg = tfjsdownload.model_config(model, neuralnet, model_variant)
-        input_tensor_name = model_cfg['input_tensors']['image']
+        pose_scores, keypoint_scores, keypoint_coords = posenet.estimate_multiple_poses(img)
 
-        while True:
-            input_image, display_image, output_scale = posenet.read_cap(
-                cap, scale_factor=args.scale_factor, output_stride=output_stride)
+        overlay_image = draw_skel_and_kp(
+            img, pose_scores, keypoint_scores, keypoint_coords,
+            min_pose_score=0.15, min_part_score=0.1)
 
-            heatmaps_result, offsets_result, displacement_fwd_result, displacement_bwd_result = sess.run(
-                model_outputs,
-                feed_dict={input_tensor_name: input_image}
-            )
+        cv2.imshow('posenet', overlay_image)
+        frame_count += 1
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-            pose_scores, keypoint_scores, keypoint_coords = posenet.decode_multi.decode_multiple_poses(
-                heatmaps_result.squeeze(axis=0),
-                offsets_result.squeeze(axis=0),
-                displacement_fwd_result.squeeze(axis=0),
-                displacement_bwd_result.squeeze(axis=0),
-                output_stride=output_stride,
-                max_pose_detections=10,
-                min_pose_score=0.15)
-
-            keypoint_coords *= output_scale
-
-            # TODO this isn't particularly fast, use GL for drawing and display someday...
-            overlay_image = posenet.draw_skel_and_kp(
-                display_image, pose_scores, keypoint_scores, keypoint_coords,
-                min_pose_score=0.15, min_part_score=0.1)
-
-            cv2.imshow('posenet', overlay_image)
-            frame_count += 1
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
-        print('Average FPS: ', frame_count / (time.time() - start))
+    print('Average FPS: ', frame_count / (time.time() - start))
 
 
 if __name__ == "__main__":
