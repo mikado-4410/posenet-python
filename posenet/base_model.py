@@ -38,7 +38,3 @@ class BaseModel(ABC):
         displacement_bwd_result  = result[self.output_tensor_names[self.DISPLACEMENT_BWD_KEY]]
 
         return tf.sigmoid(heatmap_result), offsets_result, displacement_fwd_result, displacement_bwd_result, image_scale
-
-    def close(self):
-        # self.sess.close()
-        return

@@ -41,8 +41,6 @@ def main():
 
     print('Average FPS:', len(filenames) / (time.time() - start))
 
-    posenet.close()
-
 
 if __name__ == "__main__":
     main()
