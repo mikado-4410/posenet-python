@@ -25,4 +25,4 @@ else
   gpu_opts=""
 fi
 
-docker run $gpu_opts -it --rm -v $WORK:/work "$image" python "$@"
+docker run $gpu_opts -it --rm -v $WORK:/work "$image" "$@"

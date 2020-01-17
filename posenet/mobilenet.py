@@ -5,8 +5,8 @@ import cv2
 
 class MobileNet(BaseModel):
 
-    def __init__(self, sess, input_tensor_name, output_tensor_names, output_stride):
-        super().__init__(sess, input_tensor_name, output_tensor_names, output_stride)
+    def __init__(self, model_function, output_tensor_names, output_stride):
+        super().__init__(model_function, output_tensor_names, output_stride)
 
     def preprocess_input(self, image):
         target_width, target_height = self.valid_resolution(image.shape[1], image.shape[0])

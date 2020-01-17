@@ -39,7 +39,7 @@ def main():
         img = cv2.imread(f)
         pose_scores, keypoint_scores, keypoint_coords = posenet.estimate_multiple_poses(img)
         img_poses = posenet.draw_poses(img, pose_scores, keypoint_scores, keypoint_coords)
-        posenet.print_scores(img, pose_scores, keypoint_scores, keypoint_coords)
+        posenet.print_scores(f, pose_scores, keypoint_scores, keypoint_coords)
         cv2.imwrite(os.path.join(args.output_dir, os.path.relpath(f, args.image_dir)), img_poses)
 
     print('Average FPS:', len(filenames) / (time.time() - start))

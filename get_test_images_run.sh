@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-./docker_run.sh get_test_images.py
+./docker_run.sh python get_test_images.py

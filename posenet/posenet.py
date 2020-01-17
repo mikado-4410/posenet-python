@@ -13,10 +13,10 @@ class PoseNet:
             self.model.predict(image)
 
         pose_scores, keypoint_scores, keypoint_coords = posenet.decode_multiple_poses(
-            heatmap_result.squeeze(axis=0),
-            offsets_result.squeeze(axis=0),
-            displacement_fwd_result.squeeze(axis=0),
-            displacement_bwd_result.squeeze(axis=0),
+            heatmap_result.numpy().squeeze(axis=0),
+            offsets_result.numpy().squeeze(axis=0),
+            displacement_fwd_result.numpy().squeeze(axis=0),
+            displacement_bwd_result.numpy().squeeze(axis=0),
             output_stride=self.model.output_stride,
             max_pose_detections=max_pose_detections,
             min_pose_score=self.min_score)

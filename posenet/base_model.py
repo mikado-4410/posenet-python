@@ -4,16 +4,19 @@ import tensorflow as tf
 
 class BaseModel(ABC):
 
-    def __init__(self, sess, input_tensor_name, output_tensor_names, output_stride):
+    # keys for the output_tensor_names map
+    HEATMAP_KEY = "heatmap"
+    OFFSETS_KEY = "offsets"
+    DISPLACEMENT_FWD_KEY = "displacement_fwd"
+    DISPLACEMENT_BWD_KEY = "displacement_bwd"
+
+    def __init__(self, model_function, output_tensor_names, output_stride):
         self.output_stride = output_stride
-        self.sess = sess
-        self.input_tensor_name = input_tensor_name
-        self.output_tensors = [
-            tf.sigmoid(sess.graph.get_tensor_by_name(output_tensor_names['heatmap']), 'heatmap'),  # sigmoid!!!
-            sess.graph.get_tensor_by_name(output_tensor_names['offsets']),
-            sess.graph.get_tensor_by_name(output_tensor_names['displacement_fwd']),
-            sess.graph.get_tensor_by_name(output_tensor_names['displacement_bwd'])
-        ]
+        self.output_tensor_names = output_tensor_names
+        self.model_function = model_function
+        # self.sess = sess
+        # self.input_tensor_name = input_tensor_name
+        # self.output_tensors = output_tensors
 
     def valid_resolution(self, width, height):
         # calculate closest smaller width and height that is divisible by the stride after subtracting 1 (for the bias?)
@@ -27,11 +30,24 @@ class BaseModel(ABC):
 
     def predict(self, image):
         input_image, image_scale = self.preprocess_input(image)
-        heatmap_result, offsets_result, displacement_fwd_result, displacement_bwd_result = self.sess.run(
-            self.output_tensors,
-            feed_dict={self.input_tensor_name: input_image}
-        )
-        return heatmap_result, offsets_result, displacement_fwd_result, displacement_bwd_result, image_scale
+
+        input_image = tf.convert_to_tensor(input_image, dtype=tf.float32)
+
+        result = self.model_function(input_image)
+
+        heatmap_result = result[self.output_tensor_names[self.HEATMAP_KEY]]
+        offsets_result = result[self.output_tensor_names[self.OFFSETS_KEY]]
+        displacement_fwd_result = result[self.output_tensor_names[self.DISPLACEMENT_FWD_KEY]]
+        displacement_bwd_result  = result[self.output_tensor_names[self.DISPLACEMENT_BWD_KEY]]
+
+
+            # self.sess.run(
+            # self.output_tensors,
+            # feed_dict={self.input_tensor_name: input_image}
+        # )
+
+        return tf.sigmoid(heatmap_result), offsets_result, displacement_fwd_result, displacement_bwd_result, image_scale
 
     def close(self):
-        self.sess.close()
+        # self.sess.close()
+        return

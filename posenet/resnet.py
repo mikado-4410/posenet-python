@@ -5,8 +5,10 @@ import cv2
 
 class ResNet(BaseModel):
 
-    def __init__(self, sess, input_tensor_name, output_tensor_names, output_stride):
-        super().__init__(sess, input_tensor_name, output_tensor_names, output_stride)
+    # def __init__(self, sess, input_tensor_name, output_tensor_names, output_stride):
+    def __init__(self, model_function, output_tensor_names, output_stride):
+        super().__init__(model_function, output_tensor_names, output_stride)
+        # super().__init__(sess, input_tensor_name, output_tensor_names, output_stride)
         self.image_net_mean = [-123.15, -115.90, -103.06]
 
     def preprocess_input(self, image):
