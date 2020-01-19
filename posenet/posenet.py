@@ -44,6 +44,3 @@ class PoseNet:
             print('Pose #%d, score = %f' % (pi, pose_scores[pi]))
             for ki, (s, c) in enumerate(zip(keypoint_scores[pi, :], keypoint_coords[pi, :, :])):
                 print('Keypoint %s, score = %f, coord = %s' % (posenet.PART_NAMES[ki], s, c))
-
-    def close(self):
-        self.model.close()

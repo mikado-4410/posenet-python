@@ -16,6 +16,7 @@ class ResNet(BaseModel):
         input_img = cv2.resize(image, (target_width, target_height), interpolation=cv2.INTER_LINEAR)
         input_img = cv2.cvtColor(input_img, cv2.COLOR_BGR2RGB).astype(np.float32)  # to RGB colors
 
+        # See: https://github.com/tensorflow/tfjs-models/blob/master/body-pix/src/resnet.ts
         input_img = input_img + self.image_net_mean
         input_img = input_img.reshape(1, target_height, target_width, 3)  # NHWC
         return input_img, scale
