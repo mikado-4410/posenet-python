@@ -15,14 +15,25 @@ see (https://github.com/rwightman/posenet-pytorch)
 
 ### Install
 
-A suitable Python 3.x environment with Tensorflow 2.x.
+A suitable Python 3.x environment with Tensorflow 2.x. For a quick setup, use docker. 
 
 If you want to use the webcam demo, a pip version of opencv (`pip install opencv-python`) is required instead of 
 the conda version. Anaconda's default opencv does not include ffpmeg/VideoCapture support. Also, you may have to 
 force install version 3.4.x as 4.x has a broken drawKeypoints binding.
 
 Have a look at the docker configuration for a quick setup. If you want conda, have a look at the `requirements.txt` 
-file to see what you should install.
+file to see what you should install. Know that we rely on https://github.com/patlevin/tfjs-to-tf for 
+converting the tensorflow.js serialization to the tensorflow saved model. So you have to install this package: 
+
+```bash
+git clone https://github.com/patlevin/tfjs-to-tf.git 
+cd tfjs-to-tf 
+pip install . --no-deps 
+```
+
+Use the `--no-deps` flag to prevent tfjs-to-tf from installing Tensorflow 1.x as this would uninstall your 
+Tensorflow 2.x!
+
 
 ### Using Docker 
 
