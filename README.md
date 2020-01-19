@@ -75,7 +75,7 @@ version and converted on the fly.
 Image demo runs inference on an input folder of images and outputs those images with the keypoints and skeleton 
 overlayed.
 
-`python image_demo.py --model 101 --image_dir ./images --output_dir ./output`
+`python image_demo.py --model resnet50 --stride 32 --image_dir ./images --output_dir ./output`
 
 A folder of suitable test images can be downloaded by first running the `get_test_images.py` script.
 
