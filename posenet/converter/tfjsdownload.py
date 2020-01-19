@@ -4,30 +4,7 @@ import json
 import zlib
 import os
 import shutil
-import tensorflowjs.converters.common as tfjs_common
-import tfjs_graph_converter.common as tfjs_converter_common
-import posenet.converter.common as common
-
-from posenet.converter.config import load_config
-
-TFJS_MODEL_DIR = './_tfjs_models'
-TF_MODEL_DIR = './_tf_models'
-
-
-def model_config(model, neuralnet, model_variant):
-    config = load_config()
-    tfjs_models = config['models']['tfjs']
-    model_cfg = tfjs_models[model][neuralnet]
-    return {
-        'base_url': model_cfg['base_url'],
-        'filename': model_cfg['model_variant'][model_variant]['filename'],
-        'output_stride': model_cfg['model_variant'][model_variant]['output_stride'],
-        'data_format': model_cfg['model_variant'][model_variant]['data_format'],
-        'input_tensors': model_cfg['input_tensors'],
-        'output_tensors': model_cfg['output_tensors'],
-        'tfjs_dir': os.path.join(TFJS_MODEL_DIR, model, neuralnet, model_variant),
-        'tf_dir': os.path.join(TF_MODEL_DIR, model, neuralnet, model_variant)
-    }
+import posenet.converter.config as config
 
 
 def fix_model_file(model_cfg):
@@ -60,15 +37,12 @@ def download_single_file(base_url, filename, save_dir):
         f.write(data)
 
 
-def download_tfjs_model(model, neuralnet, model_variant):
+def download_tfjs_model(model_cfg):
     """
     Download a tfjs model with saved weights.
 
-    :param model: The model, e.g. 'bodypix'
-    :param neuralnet: The neural net used, e.g. 'resnet50'
-    :param model_variant: The reference to the model file, e.g. 'stride16'
+    :param model_cfg: The model configuration
     """
-    model_cfg = model_config(model, neuralnet, model_variant)
     model_file_path = os.path.join(model_cfg['tfjs_dir'], model_cfg['filename'])
     if os.path.exists(model_file_path):
         print('Model file already exists: %s...' % model_file_path)

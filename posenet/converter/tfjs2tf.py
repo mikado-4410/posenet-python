@@ -1,6 +1,7 @@
 import os
 import tensorflow as tf
 import tfjs_graph_converter as tfjs
+import posenet.converter.config as config
 import posenet.converter.tfjsdownload as tfjsdownload
 
 
@@ -13,12 +14,11 @@ def __tensor_info_def(sess, tensor_names):
     return signatures
 
 
-def convert(model, neuralnet, model_variant):
-    model_cfg = tfjsdownload.model_config(model, neuralnet, model_variant)
+def convert(model_cfg):
     model_file_path = os.path.join(model_cfg['tfjs_dir'], model_cfg['filename'])
     if not os.path.exists(model_file_path):
         print('Cannot find tfjs model path %s, downloading tfjs model...' % model_file_path)
-        tfjsdownload.download_tfjs_model(model, neuralnet, model_variant)
+        tfjsdownload.download_tfjs_model(model_cfg)
 
     # 'graph_model_to_saved_model' doesn't store the signature for the model!
     #   tfjs.api.graph_model_to_saved_model(model_cfg['tfjs_dir'], model_cfg['tf_dir'], ['serve'])

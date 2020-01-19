@@ -23,11 +23,12 @@ def main():
         if not os.path.exists(args.output_dir):
             os.makedirs(args.output_dir)
 
-    model = 'posenet'  # posenet bodypix
-    neuralnet = 'resnet50_v1'  # mobilenet_v1_100 resnet50_v1
-    model_variant = 'stride32'  # stride16 stride32
+    model = 'resnet50'  # mobilenet resnet50
+    stride = 32  # 8, 16, 32 (max 16 for mobilenet)
+    quant_bytes = 4  # float
+    multiplier = 1.0  # only for mobilenet
 
-    posenet = load_model(model, neuralnet, model_variant)
+    posenet = load_model(model, stride, quant_bytes, multiplier)
 
     filenames = [f.path for f in os.scandir(args.image_dir) if f.is_file() and f.path.endswith(('.png', '.jpg'))]
 

@@ -21,11 +21,12 @@ def main():
     print('Tensorflow version: %s' % tf.__version__)
     assert tf.__version__.startswith('2.'), "Tensorflow version 2.x must be used!"
 
-    model = 'posenet'  # posenet bodypix
-    neuralnet = 'resnet50_v1'  # mobilenet_v1_100 resnet50_v1
-    model_variant = 'stride32'  # stride16 stride32
+    model = 'resnet50'  # mobilenet resnet50
+    stride = 32  # 8, 16, 32
+    quant_bytes = 4  # float
+    multiplier = 1.0  # only for mobilenet
 
-    posenet = load_model(model, neuralnet, model_variant)
+    posenet = load_model(model, stride, quant_bytes, multiplier)
 
     if args.file is not None:
         cap = cv2.VideoCapture(args.file)
