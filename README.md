@@ -84,6 +84,20 @@ A folder of suitable test images can be downloaded by first running the `get_tes
 A minimal performance benchmark based on image_demo. Images in `--image_dir` are pre-loaded and inference is 
 run `--num_images` times with no drawing and no text output.
 
+Running the benchmark cycling 1000 times through the example images on a Geforce GTX 1080ti gives these average FPS 
+using TF 2.0.0:
+
+```
+ResNet50 stride 16: 32.41 FPS
+ResNet50 stride 32: 38.70 FPS (strange this is faster than with stride 16)
+MobileNet stride 8: 37.90 FPS (surprisingly slow for mobilenet, ran this several times, same result)
+MobileNet stride 16: 58.64 FPS
+```
+
+I can't explain why the larger stride gives a faster result. It was expected that MobileNet would be faster than 
+ResNet50, but the MobileNet quality is visibly lower on the rendered images (running image_demo.py).
+
+
 #### webcam_demo.py
 
 The webcam demo uses OpenCV to capture images from a connected webcam. The result is overlayed with the keypoints and 
