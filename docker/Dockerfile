@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pip install --upgrade pip && \
     rm -rf /var/lib/apt/lists/*
 
-COPY ../requirements.txt /work/
+COPY requirements.txt /work/
 
 WORKDIR /work
 
@@ -24,6 +24,7 @@ RUN pip install -r requirements.txt --no-deps
 
 RUN git clone https://github.com/patlevin/tfjs-to-tf.git && \
     cd tfjs-to-tf && \
+    git checkout v0.3.0 && \
     pip install . --no-deps && \
     cd .. && \
     rm -r tfjs-to-tf

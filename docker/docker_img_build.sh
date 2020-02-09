@@ -15,6 +15,8 @@ else
   version="--build-arg IMAGE_VERSION=2.1.0-py3-jupyter"
 fi
 
+cp ../requirements.txt .
+
 docker rmi -f "$image"
 
 docker build -t "$image" $version .
