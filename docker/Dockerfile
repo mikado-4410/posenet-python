@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pip install --upgrade pip && \
     rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /work/
+COPY ../requirements.txt /work/
 
 WORKDIR /work
 

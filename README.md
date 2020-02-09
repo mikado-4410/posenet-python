@@ -47,10 +47,10 @@ If you just want to test this code, you can run everything on a CPU just as well
 4fps on resnet50. Replace `GPU` below with `CPU` to test on a CPU.
 
 ```bash
-./docker_img_build.sh GPU 
-. ./exportGPU.sh
-./get_test_images_run.sh
-./image_demo_run.sh
+./bin/docker_img_build.sh GPU 
+. ./bin/exportGPU.sh
+./bin/get_test_images_run.sh
+./bin/image_demo_run.sh
 ``` 
 
 Some pointers to get you going on the Linux machine setup. Most links are based on Ubuntu, but other distributions 

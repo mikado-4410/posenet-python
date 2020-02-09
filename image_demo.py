@@ -26,7 +26,7 @@ def main():
             os.makedirs(args.output_dir)
 
     model = args.model  # mobilenet resnet50
-    stride = args.stride  # 8, 16, 32 (max 16 for mobilenet)
+    stride = args.stride  # 8, 16, 32 (max 16 for mobilenet, min 16 for resnet50)
     quant_bytes = args.quant_bytes  # float
     multiplier = args.multiplier  # only for mobilenet
 
