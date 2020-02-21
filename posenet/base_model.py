@@ -35,6 +35,6 @@ class BaseModel(ABC):
         heatmap_result = result[self.output_tensor_names[self.HEATMAP_KEY]]
         offsets_result = result[self.output_tensor_names[self.OFFSETS_KEY]]
         displacement_fwd_result = result[self.output_tensor_names[self.DISPLACEMENT_FWD_KEY]]
-        displacement_bwd_result  = result[self.output_tensor_names[self.DISPLACEMENT_BWD_KEY]]
+        displacement_bwd_result = result[self.output_tensor_names[self.DISPLACEMENT_BWD_KEY]]
 
         return tf.sigmoid(heatmap_result), offsets_result, displacement_fwd_result, displacement_bwd_result, image_scale

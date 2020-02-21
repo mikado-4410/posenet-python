@@ -8,6 +8,7 @@ _tf_models/*
 _tfjs_models/*
 _posenet_weights/*
 docker/requirements.txt
+*.mp4
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
