@@ -46,11 +46,10 @@ def main():
 
     # Scaling the input image reduces the quality of the pose detections!
     # The speed gain is about the square of the scale factor.
-    posenet_input_scale = 1.0
-    # posenet_input_height = 540  # scale factor for the posenet input
-    # posenet_input_scale = posenet_input_height / height
-    # posenet_input_width = int(width * posenet_input_scale)
-    # print("posenet_input_scale: %3.4f" % (posenet_input_scale))
+    posenet_input_height = 540  # scale factor for the posenet input
+    posenet_input_scale = 1.0  # posenet_input_height / height  # 1.0
+    posenet_input_width = int(width * posenet_input_scale)
+    print("posenet_input_scale: %3.4f" % (posenet_input_scale))
 
 
     start = time.time()
@@ -59,9 +58,12 @@ def main():
     ret, frame = cap.read()
 
     while ret:
-        frame_rescaled = frame  # no scaling
-        # frame_rescaled =
-        #    cv2.resize(frame, (posenet_input_width, posenet_input_height), interpolation=cv2.INTER_LINEAR)
+        if posenet_input_scale == 1.0:
+            frame_rescaled = frame  # no scaling
+        else:
+            frame_rescaled = \
+                cv2.resize(frame, (posenet_input_width, posenet_input_height), interpolation=cv2.INTER_LINEAR)
+
         pose_scores, keypoint_scores, keypoint_coords = posenet.estimate_multiple_poses(frame_rescaled, max_pose_detections)
 
         keypoint_coords_upscaled = keypoint_coords / posenet_input_scale
